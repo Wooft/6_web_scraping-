@@ -19,16 +19,40 @@ KEYWORDS = ['дизайн', 'фото', 'web', 'python']
 base_url = 'https://habr.com'
 end_url = '/ru/all/'
 
-def getlinks():
-    response = requests.get(url=base_url + end_url, headers=headers)
+def getsoup(link):
+    response = requests.get(link, headers=headers)
     text = response.text
     soup = bs4.BeautifulSoup(text, features="html.parser")
-    articles = soup.find_all("article")
+    return soup
+
+def getlinks():
     links = []
-    for article in articles:
-        if 'company' not in article.find(class_="tm-article-snippet__title-link").attrs["href"]: ##удаляем рекламные посты
-            links.append(base_url + article.find(class_="tm-article-snippet__title-link").attrs["href"])
-    print(links)
+    urls = []
+    urls.append(base_url + end_url)
+    for i in range(2, 6):
+        urls.append(base_url + end_url + f'page{i}')
+    for url in urls:
+        soup = getsoup(url)
+        articles = soup.find_all("article")
+        for article in articles:
+            if 'company' not in article.find(class_="tm-article-snippet__title-link").attrs["href"]:  ##удаляем рекламные посты
+                links.append(base_url + article.find(class_="tm-article-snippet__title-link").attrs["href"])
+    return links
+
+def getstats():
+    links = getlinks()
+    for link in links:
+        flag = 0
+        soup = getsoup(link)
+        text = soup.find(class_="article-formatted-body").text
+        for words in KEYWORDS:
+            if words in text.strip():
+                if flag == 0:
+                    print(f'Статья: "{soup.find(class_="tm-article-snippet__title tm-article-snippet__title_h1").text}", ссылка - {link} содержит ключевое слово - "{words}"')
+                    flag = 1
+                else:
+                    print(f'А также, ключевое слово: "{words}"')
 
 if __name__ == '__main__':
-    getlinks()
+    print(getlinks())
+    getstats()
