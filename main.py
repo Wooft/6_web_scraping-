@@ -22,7 +22,11 @@ def getinfo():
     response = requests.get(url=base_url, headers=headers)
     text = response.text
     soup = bs4.BeautifulSoup(text, features="html.parser")
-    return soup
+    articles = soup.find_all("article")
+    for article in articles:
+        hubs = article.find_all(class_="tm-article-snippet__hubs-item")
+        hubs = [hub.text.strip() for hub in hubs ]
+        print(hubs)
 
 if __name__ == '__main__':
-    print(getinfo())
+    getinfo()
