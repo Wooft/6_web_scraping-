@@ -16,17 +16,19 @@ headers = {
 }
 KEYWORDS = ['дизайн', 'фото', 'web', 'python']
 
-base_url = 'https://habr.com/ru/all/'
+base_url = 'https://habr.com'
+end_url = '/ru/all/'
 
-def getinfo():
-    response = requests.get(url=base_url, headers=headers)
+def getlinks():
+    response = requests.get(url=base_url + end_url, headers=headers)
     text = response.text
     soup = bs4.BeautifulSoup(text, features="html.parser")
     articles = soup.find_all("article")
+    links = []
     for article in articles:
-        hubs = article.find_all(class_="tm-article-snippet__hubs-item")
-        hubs = [hub.text.strip() for hub in hubs ]
-        print(hubs)
+        if 'company' not in article.find(class_="tm-article-snippet__title-link").attrs["href"]: ##удаляем рекламные посты
+            links.append(base_url + article.find(class_="tm-article-snippet__title-link").attrs["href"])
+    print(links)
 
 if __name__ == '__main__':
-    getinfo()
+    getlinks()
