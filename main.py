@@ -54,5 +54,4 @@ def getstats():
                     print(f'А также, ключевое слово: "{words}"')
 
 if __name__ == '__main__':
-    print(getlinks())
     getstats()
