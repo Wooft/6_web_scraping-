@@ -37,10 +37,12 @@ def getlinks():
         for article in articles:
             if 'company' not in article.find(class_="tm-article-snippet__title-link").attrs["href"]:  ##удаляем рекламные посты
                 links.append(base_url + article.find(class_="tm-article-snippet__title-link").attrs["href"])
+    print(f'Всего найдено статей за последние 5 дней: {len(links)}.')
     return links
 
 def getstats():
     links = getlinks()
+    number = 0
     for link in links:
         flag = 0
         soup = getsoup(link)
@@ -48,7 +50,8 @@ def getstats():
         for words in KEYWORDS:
             if words in text.strip():
                 if flag == 0:
-                    print(f'Статья: "{soup.find(class_="tm-article-snippet__title tm-article-snippet__title_h1").text}", ссылка - {link} содержит ключевое слово - "{words}"')
+                    number += 1
+                    print(f'{number}. Статья: "{soup.find(class_="tm-article-snippet__title tm-article-snippet__title_h1").text}", ссылка - {link} содержит ключевое слово - "{words}"')
                     flag = 1
                 else:
                     print(f'А также, ключевое слово: "{words}"')
