@@ -1,6 +1,6 @@
-import pprint
 import bs4
 import requests
+from NextPage import Habr
 
 headers = {
     'sec-ch-ua': 'Google Chrome";v="105", "Not)A;Brand";v="8", "Chromium";v="105',
@@ -27,17 +27,13 @@ def getsoup(link):
 
 def getlinks():
     links = []
-    urls = []
-    urls.append(base_url + end_url)
-    for i in range(2, 6):
-        urls.append(base_url + end_url + f'page{i}')
-    for url in urls:
+    for url in Habr(5):
         soup = getsoup(url)
         articles = soup.find_all("article")
         for article in articles:
             if 'company' not in article.find(class_="tm-article-snippet__title-link").attrs["href"]:  ##удаляем рекламные посты
                 links.append(base_url + article.find(class_="tm-article-snippet__title-link").attrs["href"])
-    print(f'Всего найдено статей за последние 5 дней: {len(links)}.')
+    print(f'Всего найдено статей на последних 5 страницах: {len(links)}.')
     return links
 
 def getstats():
